@@ -28,7 +28,7 @@ func getPhotos(path string) (list []string) {
 }
 
 func getNameOfDir(path string) string {
-	beginIndex := strings.LastIndexAny(path, "/")
+	beginIndex := strings.LastIndexAny(path, "/") + 1
 	fmt.Println(path[beginIndex:])
 	return path[beginIndex:] + ".pdf"
 }
