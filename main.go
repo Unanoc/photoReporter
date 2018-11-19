@@ -5,11 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/jung-kurt/gofpdf"
 )
 
-const outputPath = "/Users/lee/Desktop/photo_report.pdf"
+const outputPath = "/Users/lee/Desktop/"
 
 func getPhotos(path string) (list []string) {
 	files, err := ioutil.ReadDir(path)
@@ -26,11 +27,17 @@ func getPhotos(path string) (list []string) {
 	return
 }
 
+func getNameOfDir(path string) string {
+	beginIndex := strings.LastIndexAny(path, "/")
+	fmt.Println(path[beginIndex:])
+	return path[beginIndex:] + ".pdf"
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		panic("path is not defined")
 	}
-	path := string(os.Args[1]) + "/"
+	path := string(os.Args[1])
 
 	pdf := gofpdf.New("P", "mm", "A4", "") // A4 210.0 x 297.0
 	// See documentation for details on how to generate fonts
@@ -42,15 +49,15 @@ func main() {
 	write := func(image string, isNewPage bool) {
 		if isNewPage {
 			pdf.MultiCell(190, ht, tr(image), "", "C", false)
-			pdf.Image(path+image, 25, 40, 0, 100, false, "", 0, "")
+			pdf.Image(path+"/"+image, 25, 40, 0, 100, false, "", 0, "")
 		} else {
 			pdf.MoveTo(0, 160)
 			pdf.MultiCell(190, ht, tr(image), "", "C", false)
-			pdf.Image(path+image, 25, 180, 0, 100, false, "", 0, "")
+			pdf.Image(path+"/"+image, 25, 180, 0, 100, false, "", 0, "")
 		}
 	}
 
-	photos := getPhotos(path)
+	photos := getPhotos(path + "/")
 	for index, photo := range photos {
 		if index%2 == 0 {
 			pdf.AddPage()
@@ -59,7 +66,9 @@ func main() {
 			write(photo, false)
 		}
 	}
-	err := pdf.OutputFileAndClose(outputPath)
+	nameOfReport := outputPath + getNameOfDir(path)
+	fmt.Println(nameOfReport)
+	err := pdf.OutputFileAndClose(nameOfReport)
 	if err != nil {
 		fmt.Println(err)
 	} else {
