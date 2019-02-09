@@ -1,4 +1,4 @@
-# photoReporter
+# PhotoReporter
 
 ### How to use
 Download it!
